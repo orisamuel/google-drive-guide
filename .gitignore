@@ -1,0 +1,7 @@
+.env
+.env.*
+.claude/
+node_modules/
+CLAUDE.md
+private/
+shots/

@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-os="win">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>עוברים לגוגל דרייב · מדריכון</title>
+<meta name="description" content="מדריכון לצוות של 42: איך מתקינים את Google Drive במחשב (ווינדוס ומק), מעבירים את הקבצים מ-OneDrive לדרייב המשותף, ומה משתנה בעבודה.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="הקבצים עוברים דירה">
+<meta property="og:description" content="מדריכון לצוות של 42: מתקינים את Google Drive, מעבירים את הקבצים מ-OneDrive, ומכירים את ההרגלים החדשים.">
+<meta property="og:image" content="https://orisamuel.github.io/google-drive-guide/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta name="theme-color" content="#F3EEE6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120F" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='7' width='26' height='21' rx='3' fill='%23C49A68'/%3E%3Crect x='3' y='7' width='26' height='5' rx='2' fill='%23D9B386'/%3E%3Crect x='13' y='7' width='6' height='9' fill='%23F4E7CC'/%3E%3Crect x='17' y='19' width='9' height='5' rx='1' fill='%23D63A2A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Rubik:wght@400;500;700;800&display=swap">
+<style>
+/* Moving-day guide: kraft boxes and marker labels carry the metaphor, the instructions stay plain cards. Phone first. */
+:root{
+  --bg:#F3EEE6;
+  --paper:#FFFDF8;
+  --ink:#1F1B16;
+  --muted:#6B6155;
+  --line:#E2D8CA;
+  --chip:#ECE4D8;
+  --kraft:#D7B385;
+  --kraft-2:#C59C69;
+  --kraft-3:#A98052;
+  --tape:rgba(255,248,228,.62);
+  --marker:#2A2118;
+  --stamp:#D63A2A;
+  --stamp-ink:#FFFFFF;
+  --stamp-soft:#FBE3DD;
+  --ok:#2F7A4F;
+  --note:#FFE27D;
+  --note-ink:#3A2F0C;
+  --shadow:rgba(70,45,20,.28);
+
+  --mock-bg:#FFFFFF;
+  --mock-top:#EEF0F3;
+  --mock-ink:#1F2328;
+  --mock-muted:#6B7280;
+  --mock-line:#E1E4E8;
+  --mock-hl:#D9E6FF;
+  --mock-hl-ink:#0B3C9C;
+
+  --font-body:'Rubik','Segoe UI','Arial Hebrew',Arial,sans-serif;
+  --font-marker:'Amatic SC','Rubik',sans-serif;
+  --font-mono:ui-monospace,'Cascadia Mono',Consolas,Menlo,monospace;
+  --r-lg:22px;
+  --r-md:16px;
+  --r-sm:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15120F; --paper:#1F1A15; --ink:#F3ECE2; --muted:#ACA092; --line:#3A3129; --chip:#2A231C;
+    --kraft:#A9825A; --kraft-2:#93704B; --kraft-3:#76583A; --tape:rgba(255,240,210,.26);
+    --marker:#1B140D; --stamp:#FF6A55; --stamp-ink:#1C0A06; --stamp-soft:#3B1C16; --ok:#5BC48A;
+    --note:#E8CD68; --note-ink:#2A220A; --shadow:rgba(0,0,0,.6);
+    --mock-bg:#202326; --mock-top:#2B2F34; --mock-ink:#E8EAED; --mock-muted:#9AA0A6; --mock-line:#363A40; --mock-hl:#23406F; --mock-hl-ink:#CFE0FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15120F; --paper:#1F1A15; --ink:#F3ECE2; --muted:#ACA092; --line:#3A3129; --chip:#2A231C;
+  --kraft:#A9825A; --kraft-2:#93704B; --kraft-3:#76583A; --tape:rgba(255,240,210,.26);
+  --marker:#1B140D; --stamp:#FF6A55; --stamp-ink:#1C0A06; --stamp-soft:#3B1C16; --ok:#5BC48A;
+  --note:#E8CD68; --note-ink:#2A220A; --shadow:rgba(0,0,0,.6);
+  --mock-bg:#202326; --mock-top:#2B2F34; --mock-ink:#E8EAED; --mock-muted:#9AA0A6; --mock-line:#363A40; --mock-hl:#23406F; --mock-hl-ink:#CFE0FF;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--font-body);overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit}
+p{margin:0}
+:focus-visible{outline:2.5px solid var(--stamp);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1080px;margin-inline:auto;padding-inline:16px}
+
+/* OS switching: one page, two computers */
+html[data-os="win"] [data-only="mac"],
+html[data-os="mac"] [data-only="win"]{display:none!important}
+
+.ui{direction:ltr;unicode-bidi:isolate;display:inline-block;font-weight:500;font-size:.92em;background:var(--chip);border-radius:6px;padding:0 6px;line-height:1.5}
+.path{direction:ltr;unicode-bidi:isolate;display:inline-block;font:500 .86em/1.5 var(--font-mono);background:var(--chip);border-radius:6px;padding:0 6px}
+kbd{direction:ltr;unicode-bidi:isolate;display:inline-block;font:600 .8em/1.5 var(--font-mono);background:var(--paper);border:1px solid var(--line);border-bottom-width:2.5px;border-radius:6px;padding:0 6px}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.nw{white-space:nowrap}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap}
+.brand .mini{width:22px;height:18px;border-radius:3px;background:linear-gradient(180deg,var(--kraft) 0 30%,var(--kraft-2) 30%);position:relative;flex:none}
+.brand .mini::after{content:"";position:absolute;top:0;left:50%;width:6px;height:9px;transform:translateX(-50%);background:var(--tape)}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;min-height:36px;padding:6px 14px;font-weight:500;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg-label{font-size:13.5px;color:var(--muted);margin-inline-end:8px;display:none}
+@media (min-width:520px){.seg-label{display:inline}}
+.os-top{display:flex;align-items:center}
+
+/* ---------- hero ---------- */
+.hero{padding-block:28px 40px;display:grid;gap:22px}
+.eyebrow{font-size:14px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:18px;height:2px;background:var(--stamp);border-radius:2px}
+h1{font-weight:800;font-size:clamp(54px,15.5vw,112px);line-height:.92;letter-spacing:-.02em;margin:10px 0 0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--stamp)}
+.lede{font-size:18.5px;line-height:1.6;max-width:36ch}
+.pile{position:relative;width:100%;max-width:440px;aspect-ratio:5/4;margin-inline:auto}
+.pile .floor{position:absolute;left:4%;right:4%;bottom:-3%;height:12%;border-radius:50%;background:radial-gradient(closest-side,var(--shadow),transparent);filter:blur(4px)}
+.box{position:absolute;border-radius:7px 7px 5px 5px;background:linear-gradient(180deg,var(--kraft) 0 15%,var(--kraft-2) 15% 100%);box-shadow:0 18px 26px -16px var(--shadow),inset 0 -7px 0 rgba(0,0,0,.07);animation:drop .75s cubic-bezier(.2,.9,.3,1.15) both;transform:rotate(var(--r,0deg))}
+.box::before{content:"";position:absolute;top:0;left:50%;width:22%;height:44%;transform:translateX(-50%);background:var(--tape)}
+.box .lbl{position:absolute;inset:auto 0 15% 0;text-align:center;font-family:var(--font-marker);font-weight:700;color:var(--marker);font-size:clamp(30px,8.6vw,46px);line-height:1;transform:rotate(-2deg)}
+.box .stk{position:absolute;top:22%;background:var(--stamp);color:var(--stamp-ink);font:700 12.5px/1 var(--font-body);padding:6px 9px 5px;border-radius:4px;transform:rotate(9deg);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.b-video{left:1%;bottom:0;width:57%;height:47%;--r:-1.5deg;animation-delay:.05s}
+.b-video .stk{right:8%}
+.b-acc{right:1%;bottom:0;width:41%;height:41%;--r:2.5deg;animation-delay:.2s}
+.b-acc .stk{left:8%;transform:rotate(-8deg)}
+.b-acc .lbl{font-size:clamp(25px,7vw,38px)}
+.b-studio{left:21%;bottom:45%;width:50%;height:39%;--r:-3deg;animation-delay:.38s}
+.b-studio .stk{right:7%}
+@keyframes drop{from{opacity:0;transform:translateY(-36px) rotate(var(--r,0deg))}to{opacity:1;transform:translateY(0) rotate(var(--r,0deg))}}
+@media (prefers-reduced-motion:reduce){.box{animation:none}html{scroll-behavior:auto}}
+
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.chip{display:flex;flex-direction:column;gap:2px;text-decoration:none;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;transition:transform .15s,border-color .15s}
+.chip:hover{transform:translateY(-2px);border-color:var(--kraft-2)}
+.chip b{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
+.chip b i{font-style:normal;font-family:var(--font-marker);font-size:26px;line-height:.8;color:var(--stamp)}
+.chip span{font-size:13.5px;color:var(--muted)}
+
+@media (min-width:860px){
+  .hero{grid-template-columns:1.2fr .8fr;align-items:center;padding-block:56px 64px;column-gap:48px}
+  .hero .pile{grid-column:2;grid-row:1 / span 2}
+  h1{font-size:88px}
+}
+
+/* ---------- sections ---------- */
+section.part{padding-block:38px 46px;border-top:2px dashed var(--line)}
+.tag{display:inline-flex;align-items:center;gap:10px;font-weight:500;font-size:14.5px;color:var(--muted);margin-bottom:8px}
+.tag .num{display:grid;place-items:center;width:38px;height:34px;border-radius:5px;background:linear-gradient(180deg,var(--kraft) 0 26%,var(--kraft-2) 26%);font-family:var(--font-marker);font-weight:700;font-size:28px;color:var(--marker);line-height:1;transform:rotate(-3deg)}
+h2{font-weight:800;font-size:clamp(34px,9vw,54px);line-height:1.02;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h3{font-weight:700;font-size:19px;line-height:1.3;margin:0;text-wrap:balance}
+.intro{color:var(--muted);font-size:17.5px;max-width:58ch;margin-top:12px}
+
+/* computer chooser inside the install section */
+.chooser{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:24px 0 8px}
+.chooser .q{font-weight:700;font-size:16px}
+.chooser .seg button{min-height:44px;padding:8px 20px;font-size:16px}
+.phone-note{display:none;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--paper);border:1px dashed var(--kraft-2);border-radius:var(--r-md);padding:12px 14px;margin:14px 0 6px;font-size:15px}
+html.is-mobile .phone-note{display:flex}
+
+/* numbered steps */
+.steps{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:10px}
+.step{display:grid;grid-template-columns:44px 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 14px 16px}
+.step .n{width:44px;height:40px;border-radius:6px;background:linear-gradient(180deg,var(--kraft) 0 24%,var(--kraft-2) 24%);display:grid;place-items:center;font-family:var(--font-marker);font-weight:700;font-size:30px;line-height:1;color:var(--marker)}
+.step .body{min-width:0;display:grid;gap:8px;align-content:start}
+.step p{color:var(--ink)}
+.soft{color:var(--muted);font-size:15.5px}
+.req{font-size:15px;color:var(--muted);margin-top:2px}
+.btns{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:999px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:700;font-size:15.5px;border:0;cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);font-weight:500;min-height:42px;padding:8px 16px;font-size:15px}
+.btn svg{width:18px;height:18px;flex:none}
+.link{font-size:15px;color:var(--muted);text-underline-offset:3px}
+.link:hover{color:var(--ink)}
+@media (min-width:860px){.steps.two{grid-template-columns:1fr 1fr}.step.wide{grid-column:1 / -1}}
+
+/* callouts */
+.callout{display:grid;gap:8px;border-radius:var(--r-lg);padding:16px 18px;margin-top:14px;background:var(--paper);border:1px solid var(--line)}
+.callout h3{display:flex;align-items:center;gap:8px;font-size:17px}
+.callout.warn{background:var(--stamp-soft);border-color:transparent}
+.callout.warn h3{color:var(--stamp)}
+.callout ul{margin:0;padding-inline-start:20px;display:grid;gap:6px}
+.notes{display:grid;gap:12px;margin-top:14px}
+.notes .callout{margin-top:0}
+@media (min-width:760px){.notes{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}}
+.big-num{font-weight:800;font-size:30px;line-height:1;color:var(--stamp);direction:ltr;unicode-bidi:isolate;text-align:right}
+.pathline{direction:ltr;text-align:right;font-weight:500;font-size:15px;background:var(--chip);border-radius:var(--r-sm);padding:8px 12px}
+
+/* change cards */
+.cards{display:grid;gap:12px;margin-top:22px}
+@media (min-width:700px){.cards{grid-template-columns:1fr 1fr}}
+@media (min-width:1000px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;display:grid;gap:8px;align-content:start}
+.card .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--chip);color:var(--ink)}
+.card .ic svg{width:21px;height:21px}
+.card.hot{border-color:var(--stamp);box-shadow:0 0 0 1px var(--stamp) inset}
+.card.hot .ic{background:var(--stamp);color:var(--stamp-ink)}
+.card .how{font-size:15px;color:var(--muted)}
+
+/* role crates: details that open like a box */
+.crates{display:grid;gap:16px;margin-top:30px}
+.crates-title{font-weight:700;font-size:18px;margin-top:36px}
+.crates-sub{color:var(--muted);font-size:15.5px;margin-top:2px}
+@media (min-width:1000px){.crates{grid-template-columns:repeat(3,1fr);align-items:start}}
+.crate{border-radius:14px;filter:drop-shadow(0 14px 18px var(--shadow))}
+.crate summary{list-style:none;cursor:pointer;position:relative;display:grid;gap:2px;padding:44px 18px 16px;border-radius:12px;background:linear-gradient(180deg,var(--kraft) 0 16px,var(--kraft-2) 16px);color:var(--marker);min-height:150px;align-content:end}
+.crate summary::-webkit-details-marker{display:none}
+.crate .tape{position:absolute;top:0;left:50%;width:76px;height:38px;transform:translateX(-50%)}
+.crate .tape::before,.crate .tape::after{content:"";position:absolute;top:0;height:100%;width:50%;background:var(--tape);transition:transform .4s cubic-bezier(.3,.9,.3,1.2)}
+.crate .tape::before{left:0;transform-origin:0 0}
+.crate .tape::after{right:0;transform-origin:100% 0}
+.crate[open] .tape::before{transform:rotate(-16deg) translateX(-8px)}
+.crate[open] .tape::after{transform:rotate(16deg) translateX(8px)}
+.crate .lbl{font-family:var(--font-marker);font-weight:700;font-size:46px;line-height:.9}
+.crate .what{font-weight:700;font-size:16.5px;line-height:1.35;color:var(--marker)}
+.crate .apps{font-size:13.5px;color:color-mix(in srgb,var(--marker) 72%,transparent);direction:ltr;unicode-bidi:isolate;text-align:right}
+.crate .stk{position:absolute;top:20px;right:16px;background:var(--stamp);color:var(--stamp-ink);font:700 13px/1 var(--font-body);padding:7px 10px 6px;border-radius:4px;transform:rotate(7deg);box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.crate .open{position:absolute;top:20px;left:16px;font-size:13px;font-weight:700;color:var(--marker);display:flex;align-items:center;gap:6px;background:var(--tape);border-radius:999px;padding:4px 10px}
+.crate .open::after{content:"לפתוח"}
+.crate[open] .open::after{content:"לסגור"}
+.crate .open svg{width:12px;height:12px;transition:transform .25s}
+.crate[open] .open svg{transform:rotate(180deg)}
+.crate .inside{background:var(--paper);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;margin-top:-10px;padding:22px 18px 18px}
+.crate .inside ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.crate .inside li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:16px;line-height:1.6}
+.crate .inside li::before{content:"";width:12px;height:12px;margin-top:7px;border-radius:3px;background:var(--kraft-2);transform:rotate(-8deg)}
+
+/* ---------- mockups (system UI, so they stay LTR and neutral) ---------- */
+.mock{margin:6px 0 0;display:grid;gap:8px}
+.mock figcaption{font-size:14px;color:var(--muted)}
+.win{direction:ltr;background:var(--mock-bg);color:var(--mock-ink);border:1px solid var(--mock-line);border-radius:12px;overflow:hidden;font:400 13.5px/1.4 'Segoe UI',system-ui,-apple-system,sans-serif;max-width:360px;box-shadow:0 10px 24px -14px var(--shadow)}
+.win-top{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--mock-top);padding:7px 12px;font-size:12.5px;color:var(--mock-muted)}
+.win-top .dots{display:flex;gap:6px}
+.win-top .dots i{width:10px;height:10px;border-radius:50%;background:#FF5F57}
+.win-top .dots i:nth-child(2){background:#FEBC2E}
+.win-top .dots i:nth-child(3){background:#28C840}
+.win-top .ctl{display:flex;gap:12px}
+.win-top .ctl i{width:9px;height:9px;border:1.5px solid var(--mock-muted);border-radius:1px}
+.win-top .ctl i:first-child{border-width:0 0 1.5px 0;border-radius:0}
+.tree{list-style:none;margin:0;padding:8px}
+.tree li{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;white-space:nowrap}
+.tree li.l1{padding-left:26px}
+.tree li.l2{padding-left:46px}
+.tree li.hd{font-size:11.5px;font-weight:600;color:var(--mock-muted);padding-top:8px}
+.tree li.hl{background:var(--mock-hl);color:var(--mock-hl-ink);font-weight:600}
+.tree li.hl2{outline:1.5px dashed var(--mock-hl-ink);outline-offset:-1.5px}
+.tree svg{width:16px;height:16px;flex:none}
+.finder{display:grid;grid-template-columns:1fr 1fr}
+.finder .tree li{overflow:hidden;text-overflow:ellipsis}
+.finder .tree:first-child{background:color-mix(in srgb,var(--mock-top) 60%,transparent);border-right:1px solid var(--mock-line)}
+.ctx{direction:ltr;display:flex;align-items:flex-start;gap:0;font:400 13.5px/1.4 'Segoe UI',system-ui,-apple-system,sans-serif}
+.ctx .menu{background:var(--mock-bg);color:var(--mock-ink);border:1px solid var(--mock-line);border-radius:10px;padding:5px;min-width:170px;box-shadow:0 12px 26px -14px var(--shadow)}
+.ctx .menu div{padding:6px 10px;border-radius:6px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.ctx .menu .sep{height:1px;padding:0;margin:4px 6px;background:var(--mock-line);border-radius:0}
+.ctx .menu .hl{background:var(--mock-hl);color:var(--mock-hl-ink);font-weight:600}
+.ctx .menu .chev{margin-left:auto;opacity:.7}
+.ctx .menu.sub{margin-top:62px;margin-left:-8px;min-width:150px}
+.ctx .muted{color:var(--mock-muted)}
+.ctx svg{width:15px;height:15px;flex:none}
+
+/* ---------- FAQ ---------- */
+.faq{display:grid;gap:10px;margin-top:22px}
+.faq details{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 16px;font-weight:700;font-size:16.5px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-weight:400;font-size:26px;line-height:1;color:var(--stamp);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .a{padding:0 16px 16px;display:grid;gap:8px;color:var(--ink);font-size:16px}
+
+/* ---------- fridge note ---------- */
+.fridge{padding-block:20px 56px}
+.note{position:relative;max-width:520px;margin-inline:auto;background:var(--note);color:var(--note-ink);border-radius:4px;padding:34px 22px 24px;transform:rotate(-1.2deg);box-shadow:0 22px 30px -18px var(--shadow)}
+.note::before{content:"";position:absolute;top:-12px;left:50%;width:28px;height:28px;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 35% 35%,#ff8a7a,var(--stamp) 60%);box-shadow:0 4px 6px rgba(0,0,0,.25)}
+.note h2{font-family:var(--font-marker);font-weight:700;font-size:52px;line-height:.9;letter-spacing:0;color:var(--note-ink)}
+.note ol{margin:14px 0 0;padding:0;list-style:none;counter-reset:n;display:grid;gap:10px}
+.note li{counter-increment:n;display:grid;grid-template-columns:30px 1fr;gap:8px;font-size:17px;font-weight:500;line-height:1.45}
+.note li::before{content:counter(n);font-family:var(--font-marker);font-weight:700;font-size:30px;line-height:.9}
+
+footer{border-top:2px dashed var(--line);padding-block:24px 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:grid;gap:6px}
+footer a{text-underline-offset:3px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-folder" viewBox="0 0 16 16"><path d="M1.5 4.2c0-.6.5-1 1-1h3.4l1.5 1.5h6.1c.6 0 1 .4 1 1v6.6c0 .6-.4 1-1 1H2.5c-.5 0-1-.4-1-1z" fill="#E9B949"/><path d="M1.5 6h13v6.3c0 .6-.4 1-1 1H2.5c-.5 0-1-.4-1-1z" fill="#F6CD62"/></symbol>
+    <symbol id="i-shared" viewBox="0 0 16 16"><path d="M1.5 4.2c0-.6.5-1 1-1h3.4l1.5 1.5h6.1c.6 0 1 .4 1 1v6.6c0 .6-.4 1-1 1H2.5c-.5 0-1-.4-1-1z" fill="#8A9AAE"/><path d="M1.5 6h13v6.3c0 .6-.4 1-1 1H2.5c-.5 0-1-.4-1-1z" fill="#A9B8CB"/><circle cx="6.6" cy="9.1" r="1.25" fill="#fff"/><circle cx="9.6" cy="9.1" r="1.25" fill="#fff"/><path d="M4.6 12.2c.3-1.2 1.1-1.8 2-1.8s1.7.6 2 1.8M7.6 12.2c.3-1.2 1.1-1.8 2-1.8s1.7.6 2 1.8" stroke="#fff" stroke-width="1" fill="none"/></symbol>
+    <symbol id="i-pc" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="8.5" rx="1.2" fill="#5B8DEF"/><rect x="5.5" y="12.2" width="5" height="1.3" rx=".6" fill="#7D8A99"/></symbol>
+    <symbol id="i-disk" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="1.5" fill="#9AA6B5"/><circle cx="12" cy="8" r="1" fill="#2BD46B"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 16 16"><path d="M4.3 12.6h7.4a3 3 0 0 0 .3-6 4.1 4.1 0 0 0-7.8 1.1 2.5 2.5 0 0 0 .1 4.9z" fill="#5B8DEF"/></symbol>
+    <symbol id="i-gdrive" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="1.5" fill="#9AA6B5"/><path d="M5.6 10.4h4.8a1.6 1.6 0 0 0 .2-3.2 2.2 2.2 0 0 0-4.2.6 1.3 1.3 0 0 0-.8 2.6z" fill="#fff"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 20 20"><path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5M4 15.5h12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="#top"><span class="mini" aria-hidden="true"></span>42 · עוברים לדרייב</a>
+    <div class="os-top">
+      <span class="seg-label" id="seg-top-label">המחשב שלי:</span>
+      <div class="seg" role="group" aria-labelledby="seg-top-label">
+        <button type="button" data-os-btn="win" aria-pressed="true">ווינדוס</button>
+        <button type="button" data-os-btn="mac" aria-pressed="false">מק</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow">מדריכון לצוות של 42</p>
+      <h1>הקבצים<br>עוברים <em>דירה.</em></h1>
+    </div>
+    <div class="pile" aria-hidden="true">
+      <div class="floor"></div>
+      <div class="box b-video"><span class="stk">כבד</span><span class="lbl">וידאו</span></div>
+      <div class="box b-acc"><span class="stk">דחוף</span><span class="lbl">ניהול לקוח</span></div>
+      <div class="box b-studio"><span class="stk">שביר</span><span class="lbl">סטודיו</span></div>
+    </div>
+    <div style="display:grid;gap:18px">
+      <p class="lede">42 עוברת מ-OneDrive לגוגל דרייב, והקבצים שלנו עוברים לדרייב משותף אחד. שלושה צעדים: מתקינים את Google Drive במחשב, מעבירים את הקבצים, ומכירים כמה הרגלים חדשים.</p>
+      <nav class="chips" aria-label="תוכן המדריך">
+        <a class="chip" href="#install"><b><i>1</i>מתקינים</b><span>כמה דקות, פעם אחת</span></a>
+        <a class="chip" href="#move"><b><i>2</i>מעבירים</b><span>מ-OneDrive לדרייב</span></a>
+        <a class="chip" href="#work"><b><i>3</i>מה משתנה</b><span>ההרגלים החדשים</span></a>
+        <a class="chip" href="#help"><b><i>4</i>נתקעתם?</b><span>תקלות נפוצות</span></a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============ 1. INSTALL ============ -->
+  <section class="part" id="install" aria-labelledby="h-install">
+    <div class="wrap">
+      <p class="tag"><span class="num">1</span>התקנה</p>
+      <h2 id="h-install">מתקינים את Google Drive</h2>
+      <p class="intro">אפליקציה חינמית של גוגל שמחברת את הדרייב למחשב. אחרי ההתקנה הדרייב מופיע כמו עוד כונן, ופותחים ממנו קבצים ישר מפוטושופ, מפרימייר או מאקסל.</p>
+
+      <div class="chooser">
+        <span class="q" id="seg-in-label">איזה מחשב יש לכם?</span>
+        <div class="seg" role="group" aria-labelledby="seg-in-label">
+          <button type="button" data-os-btn="win" aria-pressed="true">ווינדוס</button>
+          <button type="button" data-os-btn="mac" aria-pressed="false">מק</button>
+        </div>
+      </div>
+
+      <p class="req">צריך ווינדוס 10 ומעלה או macOS 13 ומעלה, והרשאת מנהל במחשב. אין לכם הרשאת מנהל? פונים למי שמנהל את המחשבים במשרד.</p>
+
+      <div class="phone-note">
+        <p>ההתקנה נעשית במחשב. אפשר לקרוא כאן ולהתקין שם במקביל.</p>
+        <button type="button" class="btn ghost" id="share-link">לשלוח את הקישור</button>
+      </div>
+
+      <!-- Windows -->
+      <ol class="steps two" data-only="win">
+        <li class="step">
+          <span class="n">1</span>
+          <div class="body">
+            <h3>מורידים</h3>
+            <p>את קובץ ההתקנה מורידים ישר מגוגל (כ-290MB).</p>
+            <div class="btns">
+              <a class="btn" href="https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe"><svg aria-hidden="true"><use href="#i-dl"/></svg>הורדה לווינדוס</a>
+              <a class="link" href="https://workspace.google.com/products/drive/#download" target="_blank" rel="noopener">או מעמוד ההורדות של גוגל</a>
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">2</span>
+          <div class="body">
+            <h3>מתקינים</h3>
+            <p>פותחים את <span class="path">GoogleDriveSetup.exe</span> ועונים כן כשווינדוס שואל אם לאפשר לאפליקציה לבצע שינויים.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">3</span>
+          <div class="body">
+            <h3>מתחברים עם חשבון העבודה</h3>
+            <p>נפתח דפדפן. מתחברים עם המייל של 42, לא עם Gmail פרטי. בחשבון פרטי הדרייב המשותף לא יופיע.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">4</span>
+          <div class="body">
+            <h3>מוצאים את הדרייב</h3>
+            <p>בסייר הקבצים מופיע כונן חדש, <span class="ui">Google Drive (G:)</span>. בתוכו <span class="ui">My Drive</span> לקבצים אישיים, ו-<span class="ui">Shared drives</span>, שם יושב הדרייב המשותף.</p>
+            <figure class="mock">
+              <div class="win" role="img" aria-label="סייר הקבצים: הכונן Google Drive (G:) ובתוכו My Drive ו-Shared drives">
+                <div class="win-top"><span>File Explorer</span><span class="ctl"><i></i><i></i><i></i></span></div>
+                <ul class="tree">
+                  <li><svg><use href="#i-pc"/></svg>This PC</li>
+                  <li class="l1"><svg><use href="#i-disk"/></svg>Windows (C:)</li>
+                  <li class="l1 hl"><svg><use href="#i-gdrive"/></svg>Google Drive (G:)</li>
+                  <li class="l2"><svg><use href="#i-folder"/></svg>My Drive</li>
+                  <li class="l2 hl2"><svg><use href="#i-shared"/></svg>Shared drives</li>
+                </ul>
+              </div>
+              <figcaption>במחשב בעברית השמות מתורגמים: האחסון שלי, אחסון שיתופי.</figcaption>
+            </figure>
+          </div>
+        </li>
+        <li class="step wide">
+          <span class="n">5</span>
+          <div class="body">
+            <h3>מוודאים שהוא רץ</h3>
+            <p>ליד השעון בשורת המשימות יש סמל של Drive (אם הוא לא שם, הוא מתחבא מתחת לחץ <span class="ui">^</span>). לחיצה עליו מראה מה עולה ומה יורד עכשיו, וזה המקום לבדוק אם משהו עוד לא הסתיים.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- Mac -->
+      <ol class="steps two" data-only="mac">
+        <li class="step">
+          <span class="n">1</span>
+          <div class="body">
+            <h3>מורידים</h3>
+            <p>את קובץ ההתקנה מורידים ישר מגוגל (כ-145MB).</p>
+            <div class="btns">
+              <a class="btn" href="https://dl.google.com/drive-file-stream/GoogleDrive.dmg"><svg aria-hidden="true"><use href="#i-dl"/></svg>הורדה למק</a>
+              <a class="link" href="https://workspace.google.com/products/drive/#download" target="_blank" rel="noopener">או מעמוד ההורדות של גוגל</a>
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">2</span>
+          <div class="body">
+            <h3>מתקינים</h3>
+            <p>פותחים את <span class="path">GoogleDrive.dmg</span>, ובתוכו את <span class="path">GoogleDrive.pkg</span>. ממשיכים עד הסוף ומאשרים עם הסיסמה של המק.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">3</span>
+          <div class="body">
+            <h3>מתחברים עם חשבון העבודה</h3>
+            <p>נפתח דפדפן. מתחברים עם המייל של 42, לא עם Gmail פרטי. בחשבון פרטי הדרייב המשותף לא יופיע.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">4</span>
+          <div class="body">
+            <h3>מאשרים ב-Finder</h3>
+            <p>ב-Finder, בסרגל הצד תחת <span class="ui">Locations</span>, לוחצים על <span class="ui">Google Drive</span> ואז על <span class="ui">Enable</span> למעלה, או על <span class="ui">OK</span> בחלון שקופץ. בלי האישור הזה הקבצים לא ייפתחו.</p>
+            <p class="soft">Google Drive לא מופיע שם בכלל? מדליקים אותו כאן:</p>
+            <p class="pathline">System Settings › General › Login Items &amp; Extensions › File Providers</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">5</span>
+          <div class="body">
+            <h3>מוצאים את הדרייב</h3>
+            <p>בתוך <span class="ui">Google Drive</span> שב-Finder יש <span class="ui">My Drive</span> לקבצים אישיים, ו-<span class="ui">Shared drives</span>, שם יושב הדרייב המשותף.</p>
+            <figure class="mock">
+              <div class="win" role="img" aria-label="Finder: בסרגל הצד Google Drive, ובתוכו My Drive ו-Shared drives">
+                <div class="win-top"><span class="dots"><i></i><i></i><i></i></span><span>Google Drive</span></div>
+                <div class="finder">
+                  <ul class="tree">
+                    <li class="hd">Favorites</li>
+                    <li><svg><use href="#i-folder"/></svg>Desktop</li>
+                    <li><svg><use href="#i-folder"/></svg>Downloads</li>
+                    <li class="hd">Locations</li>
+                    <li class="hl"><svg><use href="#i-cloud"/></svg>Google Drive</li>
+                  </ul>
+                  <ul class="tree">
+                    <li class="hd">&nbsp;</li>
+                    <li><svg><use href="#i-folder"/></svg>My Drive</li>
+                    <li class="hl2"><svg><use href="#i-shared"/></svg>Shared drives</li>
+                  </ul>
+                </div>
+              </div>
+              <figcaption>במק התיקייה יושבת ב-<span class="path">~/Library/CloudStorage</span>, והנתיב כולל את המייל שלכם.</figcaption>
+            </figure>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">6</span>
+          <div class="body">
+            <h3>מוודאים שהוא רץ</h3>
+            <p>בשורת התפריטים למעלה יש סמל של Drive. לחיצה עליו מראה מה עולה ומה יורד עכשיו.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout">
+        <h3>בהגדרות לא צריך לשנות כלום</h3>
+        <p>אם קופצת בחירה בין <span class="ui">Stream files</span> ל-<span class="ui">Mirror files</span>, משאירים Stream, ברירת המחדל. הדרייב המשותף ממילא עובד רק בסטרימינג: רואים את כל הקבצים, וכל קובץ יורד למחשב רק כשפותחים אותו.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. MOVE ============ -->
+  <section class="part" id="move" aria-labelledby="h-move">
+    <div class="wrap">
+      <p class="tag"><span class="num">2</span>העברה</p>
+      <h2 id="h-move">מעבירים את הקבצים</h2>
+      <p class="intro">מעתיקים מהתיקייה של OneDrive לתיקייה של הדרייב, כמו בין שתי תיקיות רגילות במחשב. Google Drive מעלה ברקע.</p>
+
+      <div class="callout warn">
+        <h3>לפני שמתחילים</h3>
+        <ul>
+          <li>תיקייה משותפת של המחלקה? מציצים קודם בדרייב. אם מישהו כבר העלה אותה, לא מעלים שוב, אחרת יהיו כמה עותקים של אותו פרויקט.</li>
+          <li>מעלים תיקיות מסודרות, לא קבצים בודדים לשורש של הדרייב.</li>
+        </ul>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="n">1</span>
+          <div class="body">
+            <h3>פותחים שני חלונות</h3>
+            <p data-only="win">בסייר הקבצים: חלון אחד על התיקייה הישנה ב-OneDrive (בסרגל הצד, עם סמל הענן או הבניין של 42), וחלון שני על <span class="path">G:\Shared drives</span> ובתוכו הדרייב המשותף.</p>
+            <p data-only="mac">ב-Finder: חלון אחד על OneDrive, וחלון שני על <span class="ui">Google Drive › Shared drives</span> ובתוכו הדרייב המשותף.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">2</span>
+          <div class="body">
+            <h3>מעתיקים, לא גוזרים</h3>
+            <p data-only="win">מסמנים את התיקיות, <kbd>Ctrl</kbd>+<kbd>C</kbd>, נכנסים לתיקייה הנכונה בדרייב, ו-<kbd>Ctrl</kbd>+<kbd>V</kbd>.</p>
+            <p data-only="mac">מסמנים את התיקיות, <kbd>⌘</kbd>+<kbd>C</kbd>, נכנסים לתיקייה הנכונה בדרייב, ו-<kbd>⌘</kbd>+<kbd>V</kbd>. גוררים? רק עם <kbd>Option</kbd> לחוץ, אחרת ה-Finder מעביר במקום להעתיק.</p>
+            <p class="soft">ככה המקור נשאר ב-OneDrive עד שבודקים שהכול עבר.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">3</span>
+          <div class="body">
+            <h3>מחכים שהכול יעלה</h3>
+            <p>הסמל של Drive מראה כמה קבצים נשארו. לא מכבים את המחשב ולא מתנתקים מהאינטרנט עד שזה נגמר. פרויקט וידאו יכול לקחת כמה שעות.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">4</span>
+          <div class="body">
+            <h3>בודקים בדפדפן</h3>
+            <p>נכנסים ל-<a href="https://drive.google.com/drive/shared-drives" target="_blank" rel="noopener" class="ltr">drive.google.com</a>, ובצד: <span class="ui">Shared drives</span> (בעברית: אחסון שיתופי). מוודאים שהתיקיות שם ושהקבצים נפתחים.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">5</span>
+          <div class="body">
+            <h3>את OneDrive לא מוחקים</h3>
+            <p>בינתיים הוא הגיבוי. מוחקים ממנו רק כשיודיעו שאפשר.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="notes">
+        <div class="callout">
+          <span class="big-num">750GB</span>
+          <h3>מקסימום העלאה ביום</h3>
+          <p>גוגל מגבילה כל משתמש ל-750GB של העלאה ב-24 שעות. ארכיון וידאו גדול מחלקים לכמה ימים.</p>
+        </div>
+        <div class="callout" data-only="win">
+          <span class="big-num">4GB</span>
+          <h3>קובץ גדול מזה? דרך הדפדפן</h3>
+          <p>לפי גוגל, הכונן G: בווינדוס מקבל קבצים של עד 4GB. חומרי גלם או ייצוא ארוך שגדולים מזה מעלים בדפדפן: פותחים את התיקייה <span class="nw">ב-drive.google.com</span> וגוררים אליה את הקובץ.</p>
+        </div>
+        <div class="callout">
+          <h3>קבצים שיושבים רק בענן של OneDrive</h3>
+          <p>קובץ עם סמל ענן ב-OneDrive לא שמור במחשב. ההעתקה מורידה אותו, הוא נשאר שמור גם ב-OneDrive, ו-Drive מחזיק עותק עד שההעלאה נגמרת. לכן צריך מקום פנוי של בערך פי שניים מגודל התיקייה.</p>
+          <p class="soft">מעתיקים תיקייה אחרי תיקייה. תיקייה שכבר עלתה? ב-OneDrive: קליק ימני ← <span class="ui">Free up space</span>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. WORK ============ -->
+  <section class="part" id="work" aria-labelledby="h-work">
+    <div class="wrap">
+      <p class="tag"><span class="num">3</span>עבודה</p>
+      <h2 id="h-work">מה משתנה בעבודה</h2>
+      <p class="intro">רוב הדברים נשארים כמו שהם: פותחים, עורכים ושומרים מהתוכנות הרגילות. אלה ההרגלים החדשים.</p>
+
+      <div class="cards">
+        <article class="card">
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M6.5 18.5h11a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.6 1.6A3.8 3.8 0 0 0 6.5 18.5z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <h3>הקבצים בענן</h3>
+          <p>רואים את כל הדרייב, אבל קובץ יורד למחשב רק כשפותחים אותו. בלי אינטרנט נפתחים רק קבצים שסימנתם כזמינים אופליין.</p>
+          <p class="how" data-only="win">איך מסמנים: קליק ימני על קובץ או תיקייה ← <span class="ui">Offline access</span> ← <span class="ui">Available offline</span>. בווינדוס&nbsp;11 זה מתחת ל-<span class="ui">Show more options</span>. בעברית: גישה אופליין ← זמין במצב אופליין.</p>
+          <p class="how" data-only="mac">איך מסמנים: קליק ימני על קובץ או תיקייה ← <span class="ui">Available offline</span>.</p>
+          <div class="ctx" data-only="win" role="img" aria-label="תפריט קליק ימני: Offline access ואז Available offline">
+            <div class="menu">
+              <div>Open</div>
+              <div class="muted">Copy</div>
+              <div class="sep"></div>
+              <div class="hl"><svg><use href="#i-gdrive"/></svg>Offline access<span class="chev">›</span></div>
+              <div class="muted">Share</div>
+            </div>
+            <div class="menu sub">
+              <div class="hl">✓ Available offline</div>
+              <div>Online only</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card hot">
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 4h4M7 7l.8 12a1.5 1.5 0 0 0 1.5 1.4h5.4a1.5 1.5 0 0 0 1.5-1.4L17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3>מחיקה אצלך היא מחיקה אצל כולם</h3>
+          <p>בדרייב המשותף לכל אחד מאיתנו יש הרשאה להזיז ולמחוק. מה שנמחק או זז במחשב שלך, נמחק או זז לכל הצוות.</p>
+          <p data-only="mac">במק: גרירה של קובץ מהדרייב החוצה, למשל לשולחן העבודה, מעבירה אותו ומוחקת אותו מהדרייב. כדי להעתיק, מחזיקים <kbd>Option</kbd> בזמן הגרירה.</p>
+          <p class="how">קובץ שנמחק נשמר 30 יום באשפה של הדרייב המשותף, וכל אחד מאיתנו יכול לשחזר אותו בדפדפן.</p>
+        </article>
+
+        <article class="card">
+          <span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="12" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h4M8 12h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="16" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <h3>אופיס: אחד עורך בכל פעם</h3>
+          <p>Word, Excel ו-PowerPoint נפתחים כרגיל, ו-Drive מראה אם מישהו אחר עורך את הקובץ באותו רגע. אבל זו לא עריכה משותפת כמו ב-OneDrive: אם שניים עורכים יחד, נוצרות שתי גרסאות וצריך לאחד אותן ידנית.</p>
+          <p class="how">עובדים ביחד? פותחים את הקובץ בדפדפן. הוא נפתח ב-Google Docs, Sheets או Slides, עורכים בו ביחד, והוא נשמר בפורמט המקורי.</p>
+        </article>
+
+        <article class="card">
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3>שולחים קישור, לא קובץ</h3>
+          <p>בדפדפן: קליק ימני על הקובץ ← <span class="ui">שיתוף</span>. ללקוח נותנים הרשאת צפייה, ולא שולחים קישור לתיקייה פנימית.</p>
+        </article>
+
+        <article class="card">
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.2h3.2M12 8v4.3l2.8 1.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>יש גרסאות קודמות</h3>
+          <p>שמרתם בטעות על קובץ טוב? בדפדפן: מסמנים את הקובץ ← <span class="ui">⋮</span> ← <span class="ui">ניהול גרסאות</span> (Manage versions), ומורידים משם גרסה קודמת.</p>
+          <p class="how">גרסה ישנה נמחקת אחרי 30 יום, או כשיש 100 גרסאות חדשות ממנה. גרסה שחשוב לשמור מסמנים ב-<span class="ui">שמירה לתמיד</span>.</p>
+        </article>
+
+        <article class="card">
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12h6M9 15.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3>קבצים של גוגל נפתחים בדפדפן</h3>
+          <p>בתיקייה במחשב, מסמך של Google Docs מופיע כקובץ <span class="path">.gdoc</span> (וגם <span class="path">.gsheet</span> ו-<span class="path">.gslides</span>). לחיצה כפולה פותחת אותו בדפדפן.</p>
+        </article>
+      </div>
+
+      <p class="crates-title">ולכל מחלקה, הקופסה שלה</p>
+      <p class="crates-sub">פותחים את הקופסה שלכם.</p>
+      <div class="crates">
+        <details class="crate">
+          <summary>
+            <span class="tape" aria-hidden="true"></span>
+            <span class="stk">שביר</span>
+            <span class="open" aria-hidden="true"><svg><use href="#i-chev"/></svg></span>
+            <span class="lbl">סטודיו</span>
+            <span class="what">הקישורים לתמונות נשברים במעבר</span>
+            <span class="apps">InDesign · Illustrator · Photoshop</span>
+          </summary>
+          <div class="inside">
+            <ul>
+              <li><span>לפני שמעבירים פרויקט פעיל: באינדיזיין <span class="ui">File › Package</span>. זה אוסף לתיקייה אחת את הקובץ, את כל התמונות ואת הפונטים, ואת התיקייה הזאת מעבירים.</span></li>
+              <li><span>אחרי המעבר, בחלון <span class="ui">Links</span>: מסמנים את מה שחסר ← <span class="ui">Relink to Folder</span>, ומצביעים על התיקייה החדשה בדרייב.</span></li>
+              <li><span>קובץ שעובדים עליו היום (INDD, PSD, AI): מסמנים כזמין אופליין לפני שפותחים. אדובי ממליצה לפתוח באינדיזיין רק קובץ שסונכרן עד הסוף.</span></li>
+              <li><span>הנתיב לדרייב שונה ממחשב למחשב (במק הוא כולל את המייל), אז קובץ שעובר בין מעצבים יבקש Relink. זה תקין.</span></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="crate">
+          <summary>
+            <span class="tape" aria-hidden="true"></span>
+            <span class="stk">כבד</span>
+            <span class="open" aria-hidden="true"><svg><use href="#i-chev"/></svg></span>
+            <span class="lbl">וידאו</span>
+            <span class="what">חומר כבד עורכים מהמחשב, לא מהענן</span>
+            <span class="apps">Premiere · After Effects · DaVinci</span>
+          </summary>
+          <div class="inside">
+            <ul>
+              <li><span>לפני עריכה: מסמנים את כל תיקיית הפרויקט כזמינה אופליין, ומחכים שהכול ירד. עריכה מקבצים שעוד בענן נתקעת.</span></li>
+              <li><span>המטמון של פרימייר ואפטר (Media Cache, Disk Cache) נשאר בדיסק המקומי, כמו שאדובי ממליצה. בודקים שהוא לא מצביע לתוך הדרייב, ולא מעתיקים לדרייב קבצי מטמון ורינדור.</span></li>
+              <li><span>מעתיקים פרויקט כמו שהוא, עם כל תתי התיקיות. כשהמבנה נשמר, ב-<span class="ui">Link Media</span> מצביעים על קובץ אחד ופרימייר מוצא את השאר. הנתיב לדרייב שונה בין מחשבים, אז Relink בין עורכים זה רגיל.</span></li>
+              <li data-only="win"><span>לפי גוגל, קובץ מעל 4GB לא עובר דרך G:. מעלים אותו בדפדפן.</span></li>
+              <li><span>אפשר לייצא רינדור ישר לדרייב. רק לא סוגרים את המחשב לפני שההעלאה נגמרה.</span></li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="crate">
+          <summary>
+            <span class="tape" aria-hidden="true"></span>
+            <span class="stk">דחוף</span>
+            <span class="open" aria-hidden="true"><svg><use href="#i-chev"/></svg></span>
+            <span class="lbl">ניהול לקוח</span>
+            <span class="what">עובדים ביחד, בלי עותקים</span>
+            <span class="apps">Word · Excel · PowerPoint</span>
+          </summary>
+          <div class="inside">
+            <ul>
+              <li><span>מסמך שכמה אנשים עובדים עליו ביחד (בריף, גאנט, הצעת מחיר): Google Docs או Sheets. ככה אין "הגרסה שלי" ו"הגרסה שלך".</span></li>
+              <li><span>מצגת מעוצבת מהסטודיו נשארת PowerPoint. עורכים אותה אחד בכל פעם.</span></li>
+              <li><span>ללקוח שולחים קישור צפייה לקובץ, לא לתיקייה של הפרויקט.</span></li>
+              <li><span>קובץ כבד במייל? קישור מהדרייב במקום צרופה.</span></li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. HELP ============ -->
+  <section class="part" id="help" aria-labelledby="h-help">
+    <div class="wrap">
+      <p class="tag"><span class="num">4</span>תקלות</p>
+      <h2 id="h-help">נתקעתם?</h2>
+      <div class="faq">
+        <details>
+          <summary>אני לא רואה את הדרייב המשותף</summary>
+          <div class="a">
+            <p>בודקים שהתחברתם עם המייל של 42: לוחצים על הסמל של Drive ואז על גלגל השיניים, ושם רואים את החשבון המחובר.</p>
+            <p>החשבון נכון והדרייב עדיין לא מופיע? פונים למי ששלח לכם את הקישור.</p>
+          </div>
+        </details>
+        <details>
+          <summary>הדרייב פתוח לי רק לקריאה</summary>
+          <div class="a"><p>במחשב, הרשאת Contributor בדרייב משותף נותנת רק קריאה. כדי לשמור ולהעלות צריך הרשאת Content manager. פונים למי ששלח לכם את הקישור.</p></div>
+        </details>
+        <details>
+          <summary>קובץ נפתח לאט</summary>
+          <div class="a"><p>בפעם הראשונה הוא יורד מהענן. קבצים כבדים שעובדים עליהם מסמנים כזמינים אופליין מראש.</p></div>
+        </details>
+        <details>
+          <summary>פתאום יש עותק של הקובץ</summary>
+          <div class="a"><p>זה קורה כששניים שמרו את אותו קובץ כמעט באותו זמן. Drive שומר את השינויים של אחד מהם בעותק נפרד באותה תיקייה, כדי ששום דבר לא יאבד. פותחים את שניהם, מאחדים, ומוחקים את העותק.</p></div>
+        </details>
+        <details>
+          <summary>הדיסק מתמלא</summary>
+          <div class="a">
+            <p>Drive שומר במחשב עותק של מה שפתחתם. תיקייה שסיימתם איתה מחזירים לענן:</p>
+            <p data-only="win">קליק ימני ← <span class="ui">Offline access</span> ← <span class="ui">Online only</span>. אפשר גם להעביר את המטמון לדיסק אחר: בהעדפות של Drive, בהגדרות המתקדמות, <span class="ui">Local cached files directory</span>. את תיקיית המטמון לא מוחקים ידנית, כי קבצים שעוד לא עלו נמחקים איתה.</p>
+            <p data-only="mac">מבטלים את <span class="ui">Available offline</span> באותו תפריט. במק אי אפשר להזיז את המטמון, והמערכת מנהלת את המקום שלו בעצמה.</p>
+          </div>
+        </details>
+        <details>
+          <summary>משהו לא עולה</summary>
+          <div class="a"><p>לוחצים על הסמל של Drive ורואים מה תקוע. קובץ שפתוח בתוכנה אחרת מחכה שיסגרו אותו. עדיין תקוע? יוצאים מ-Drive (<span class="ui">Quit</span>) ופותחים אותו מחדש.</p></div>
+        </details>
+        <details>
+          <summary>מחקתי משהו בטעות</summary>
+          <div class="a">
+            <p>נכנסים ל-<a href="https://drive.google.com/drive/trash" target="_blank" rel="noopener" class="ltr">drive.google.com</a> ← <span class="ui">Trash</span> (אשפה). למעלה, ליד <span class="ui">Deleted from</span>, בוחרים את הדרייב המשותף, מסמנים את הקובץ ← <span class="ui">Restore</span> (שחזור). יש 30 יום.</p>
+            <p>עבר יותר זמן? מנהל המערכת יכול לשחזר עוד 25 יום אחרי שהקובץ יצא מהאשפה.</p>
+          </div>
+        </details>
+        <details>
+          <summary>OneDrive עדיין פועל. זה בסדר?</summary>
+          <div class="a"><p>כן, שניהם יכולים לרוץ במקביל. רק לא מסנכרנים את אותה תיקייה בשניהם, למשל תיקייה של אחד בתוך התיקייה של השני. גוגל מזהירה שזה יכול למחוק קבצים מהדרייב.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap fridge">
+    <div class="note">
+      <h2>על המקרר</h2>
+      <ol>
+        <li>עובדים מהדרייב המשותף, לא מהדסקטופ.</li>
+        <li>מחיקה או הזזה אצלך קורות אצל כולם.</li>
+        <li>עבודה כבדה או בלי אינטרנט? זמין אופליין קודם.</li>
+        <li>שולחים קישור, לא קובץ.</li>
+        <li>עורכים ביחד? בגוגל: <span class="ltr">Docs, Sheets, Slides</span>.</li>
+      </ol>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>מדריכון לצוות של 42 · אוקטובר 2026</p>
+    <p>הפרטים נבדקו באוקטובר 2026 מול <a href="https://support.google.com/drive/answer/10838124?hl=iw" target="_blank" rel="noopener">העזרה הרשמית של Google Drive</a> ומול ההמלצות של Adobe.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, KEY='gdg-os';
+  function load(){try{return localStorage.getItem(KEY)}catch(e){return null}}
+  function save(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+  var ua=navigator.userAgent||'';
+  var mobile=/Android|iPhone|iPad|iPod|Mobile/i.test(ua)||(navigator.maxTouchPoints>1&&/Macintosh/.test(ua));
+  if(mobile) root.classList.add('is-mobile');
+  var plat=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||'';
+  var saved=load();
+  var os=(saved==='win'||saved==='mac')?saved:(!mobile&&/mac/i.test(plat)?'mac':'win');
+  function apply(v){
+    root.setAttribute('data-os',v);
+    var b=document.querySelectorAll('[data-os-btn]');
+    for(var i=0;i<b.length;i++){b[i].setAttribute('aria-pressed',String(b[i].getAttribute('data-os-btn')===v))}
+  }
+  apply(os);
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('[data-os-btn]');
+    if(!t) return;
+    var v=t.getAttribute('data-os-btn'); apply(v); save(v);
+  });
+  var share=document.getElementById('share-link');
+  if(share){
+    share.addEventListener('click',function(){
+      var url=location.href.split('#')[0];
+      if(navigator.share){navigator.share({title:document.title,url:url}).catch(function(){});return}
+      if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){share.textContent='הקישור הועתק'}).catch(function(){})}
+    });
+  }
+})();
+</script>
+</body>
+</html>
